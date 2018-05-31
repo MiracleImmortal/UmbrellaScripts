@@ -1,6 +1,6 @@
 local PhaseBoots = {}
 
-PhaseBoots.Enable = Menu.AddOptionBool({"Utility", "Auto Phase Boots"}, "Enable", false)
+PhaseBoots.Enable = Menu.AddOptionBool({"Utility", "AutoUse"}, "PhaseBoots", false)
 
 function PhaseBoots.OnUpdate()
     local hero = Heroes.GetLocal()
