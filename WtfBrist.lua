@@ -1,6 +1,7 @@
 local wtfBrist = {}
 
 wtfBrist.IsEnable = Menu.AddOptionBool({"Hero Specific", "WTF+ Bristleback"}, "Enable", false)
+wtfBrist.SprayKey = Menu.AddKeyOption({"Hero Specific", "WTF+ Bristleback"}, "Spray Key", Enum.ButtonCode.KEY_1);
 wtfBrist.Debug = false
 
 wtfBrist.LastUpdateTime = 0
@@ -25,6 +26,10 @@ function wtfBrist.OnUpdate()
 
     local Units = Entity.GetUnitsInRadius(wtfBrist.MyHero, quillSprayCastRange, Enum.TeamType.TEAM_ENEMY)
     if not Units then return end
+
+    if not NPC.IsVisibleToEnemies(wtfBrist.MyHero) and not Menu.IsKeyDown(wtfBrist.SprayKey) then
+        return
+    end
 
     for i, unit in pairs(Units) do
         if unit ~= nil and unit ~= 0 and NPCs.Contains(unit) and NPC.IsEntityInRange(wtfBrist.MyHero, unit, quillSprayCastRange) then
