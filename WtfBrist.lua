@@ -4,7 +4,7 @@ wtfBrist.IsEnable = Menu.AddOptionBool({"Hero Specific", "WTF+ Bristleback"}, "E
 wtfBrist.Debug = true
 
 wtfBrist.LastUpdateTime = 0
-wtfBrist.UpdateTime = 0.0001
+wtfBrist.UpdateTime = 0.01
 
 function wtfBrist.OnUpdate()
     if not Menu.IsEnabled(wtfBrist.IsEnable) or not Engine.IsInGame() or not Heroes.GetLocal() then return end
@@ -23,14 +23,14 @@ function wtfBrist.OnUpdate()
 
     local quillSprayCastRange = Ability.GetCastRange(quillSpray)
 
-    local AllHeroes = Entity.GetUnitsInRadius(wtfBrist.MyHero, quillSprayCastRange, Enum.TeamType.TEAM_ENEMY)
-    if not AllHeroes then return end
+    local Units = Entity.GetUnitsInRadius(wtfBrist.MyHero, quillSprayCastRange, Enum.TeamType.TEAM_ENEMY)
+    if not Units then return end
 
-    for i, hero in pairs(AllHeroes) do
-        if hero ~= nil and hero ~= 0 and NPCs.Contains(hero) and NPC.IsEntityInRange(wtfBrist.MyHero, hero, quillSprayCastRange) and not Entity.IsSameTeam(hero, wtfBrist.MyHero) then
-            if Entity.IsAlive(hero) and not Entity.IsDormant(hero) and Ability.IsReady(quillSpray) and NPC.GetUnitName(hero) ~= "npc_dota_neutral_caster" then
-                if NPC.IsCreep(hero) or NPC.IsIllusion(hero) or NPC.IsHero(hero) or NPC.IsCourier(hero) then
-                    if wtfBrist.Debug then Log.Write("Attak! [".. NPC.GetUnitName(hero) .."]") end
+    for i, unit in pairs(Units) do
+        if unit ~= nil and unit ~= 0 and NPCs.Contains(unit) and NPC.IsEntityInRange(wtfBrist.MyHero, unit, quillSprayCastRange) and not Entity.IsSameTeam(unit, wtfBrist.MyHero) then
+            if Entity.IsAlive(unit) and not Entity.IsDormant(unit) and Ability.IsReady(quillSpray) and NPC.GetUnitName(unit) ~= "npc_dota_neutral_caster" then
+                if NPC.IsCreep(unit) or NPC.IsIllusion(unit) or NPC.IsHero(unit) or NPC.IsCourier(unit) then
+                    if wtfBrist.Debug then Log.Write("Attak! [".. NPC.GetUnitName(unit) .."]") end
                     Ability.CastNoTarget(quillSpray)
                     break
                 end
