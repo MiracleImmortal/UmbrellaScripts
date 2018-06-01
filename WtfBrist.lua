@@ -28,7 +28,7 @@ function wtfBrist.OnUpdate()
 
     for i, unit in pairs(Units) do
         if unit ~= nil and unit ~= 0 and NPCs.Contains(unit) and NPC.IsEntityInRange(wtfBrist.MyHero, unit, quillSprayCastRange) and not Entity.IsSameTeam(unit, wtfBrist.MyHero) then
-            if Entity.IsAlive(unit) and not Entity.IsDormant(unit) and Ability.IsReady(quillSpray) and NPC.GetUnitName(unit) ~= "npc_dota_neutral_caster" then
+            if Entity.IsAlive(unit) and not Entity.IsDormant(unit) and Ability.IsReady(quillSpray) and NPC.GetUnitName(unit) ~= "npc_dota_neutral_caster" and not NPC.IsStructure(unit) then
                 if NPC.IsCreep(unit) or NPC.IsIllusion(unit) or NPC.IsHero(unit) or NPC.IsCourier(unit) then
                     if wtfBrist.Debug then Log.Write("Attak! [".. NPC.GetUnitName(unit) .."]") end
                     Ability.CastNoTarget(quillSpray)
