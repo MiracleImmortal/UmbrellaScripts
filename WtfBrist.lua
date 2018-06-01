@@ -1,7 +1,7 @@
 local wtfBrist = {}
 
 wtfBrist.IsEnable = Menu.AddOptionBool({"Hero Specific", "WTF+ Bristleback"}, "Enable", false)
-wtfBrist.Debug = true
+wtfBrist.Debug = false
 
 wtfBrist.LastUpdateTime = 0
 wtfBrist.UpdateTime = 0.01
@@ -27,12 +27,14 @@ function wtfBrist.OnUpdate()
     if not Units then return end
 
     for i, unit in pairs(Units) do
-        if unit ~= nil and unit ~= 0 and NPCs.Contains(unit) and NPC.IsEntityInRange(wtfBrist.MyHero, unit, quillSprayCastRange) and not Entity.IsSameTeam(unit, wtfBrist.MyHero) then
-            if Entity.IsAlive(unit) and not Entity.IsDormant(unit) and Ability.IsReady(quillSpray) and NPC.GetUnitName(unit) ~= "npc_dota_neutral_caster" and not NPC.IsStructure(unit) then
-                if NPC.IsCreep(unit) or NPC.IsIllusion(unit) or NPC.IsHero(unit) or NPC.IsCourier(unit) then
-                    if wtfBrist.Debug then Log.Write("Attack! [".. NPC.GetUnitName(unit) .."]") end
-                    Ability.CastNoTarget(quillSpray)
-                    break
+        if unit ~= nil and unit ~= 0 and NPCs.Contains(unit) and NPC.IsEntityInRange(wtfBrist.MyHero, unit, quillSprayCastRange) then
+            if not Entity.IsSameTeam(unit, wtfBrist.MyHero) and not NPC.IsStructure(unit) and NPC.GetUnitName(unit) ~= "npc_dota_neutral_caster" then
+                if Entity.IsAlive(unit) and not NPC.IsWaitingToSpawn(unit) and not Entity.IsDormant(unit) and Ability.IsReady(quillSpray) then
+                    if NPC.IsCreep(unit) or NPC.IsIllusion(unit) or NPC.IsHero(unit) or NPC.IsCourier(unit) then
+                        if wtfBrist.Debug then Log.Write("Attack! [".. NPC.GetUnitName(unit) .."]") end
+                        Ability.CastNoTarget(quillSpray)
+                        break
+                    end
                 end
             end
         end
