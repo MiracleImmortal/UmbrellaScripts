@@ -5,7 +5,7 @@ wtfBrist.SprayKey = Menu.AddKeyOption({"Hero Specific", "WTF+ Bristleback"}, "Sp
 wtfBrist.Debug = false
 
 wtfBrist.LastUpdateTime = 0
-wtfBrist.UpdateTime = 0.01
+wtfBrist.UpdateTime = 0.0
 
 function wtfBrist.OnUpdate()
     if not Menu.IsEnabled(wtfBrist.IsEnable) or not Engine.IsInGame() or not Heroes.GetLocal() then return end
