@@ -22,9 +22,37 @@ function PhaseBoots.OnUpdate()
     local mana = NPC.GetMana(hero)
     if mana == nil then return end
 
+    if PhaseBoots.IsHeroInvisible(hero) then return end
+
     if NPC.IsRunning(hero) and Ability.IsCastable(phaseBoots, mana) then
         Ability.CastNoTarget(phaseBoots)
     end
+end
+
+function PhaseBoots.IsHeroInvisible(myHero)
+  if not myHero then return false end
+  if not Entity.IsAlive(myHero) then return false end
+
+  if NPC.HasState(myHero, Enum.ModifierState.MODIFIER_STATE_INVISIBLE) then return true end
+  if NPC.HasModifier(myHero, "modifier_invoker_ghost_walk_self") then return true end
+  if NPC.HasAbility(myHero, "invoker_ghost_walk") then
+    if Ability.SecondsSinceLastUse(NPC.GetAbility(myHero, "invoker_ghost_walk")) > - 1 and Ability.SecondsSinceLastUse(NPC.GetAbility(myHero, "invoker_ghost_walk")) < 1 then
+      return true
+    end
+  end
+
+  if NPC.HasItem(myHero, "item_invis_sword", true) then
+    if Ability.SecondsSinceLastUse(NPC.GetItem(myHero, "item_invis_sword", true)) > - 1 and Ability.SecondsSinceLastUse(NPC.GetItem(myHero, "item_invis_sword", true)) < 1 then
+      return true
+    end
+  end
+  if NPC.HasItem(myHero, "item_silver_edge", true) then
+    if Ability.SecondsSinceLastUse(NPC.GetItem(myHero, "item_silver_edge", true)) > - 1 and Ability.SecondsSinceLastUse(NPC.GetItem(myHero, "item_silver_edge", true)) < 1 then
+      return true
+    end
+  end
+
+  return false
 end
 
 return PhaseBoots
