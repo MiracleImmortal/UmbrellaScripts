@@ -44,9 +44,11 @@ function wtfBrist.OnUpdate()
         return
     elseif Menu.IsKeyDown(wtfBrist.SprayKey) then
         Ability.CastNoTarget(quillSpray)
+        if wtfBrist.Debug then Log.Write("Force quillSpray!") end
         return
     elseif not wtfBrist.IsHeroInvisible(wtfBrist.MyHero) and wtfBrist.WarPathCounter < wtfBrist.MaxWarPathCounter then
         Ability.CastNoTarget(quillSpray)
+        if wtfBrist.Debug then Log.Write("Increase warPath by quillSpray!") end
         return
     end
 
@@ -73,14 +75,14 @@ end
 function wtfBrist.OnModifierCreate(ent, xMod)
     if ent == wtfBrist.MyHero and Modifier.GetName(xMod) == "modifier_bristleback_warpath_stack" then
         wtfBrist.WarPathCounter = wtfBrist.WarPathCounter + 1
-        Log.Write("Create xMod -> "..Modifier.GetName(xMod).." -> "..wtfBrist.WarPathCounter)
+        if wtfBrist.Debug then Log.Write("Create xMod -> "..Modifier.GetName(xMod).." -> "..wtfBrist.WarPathCounter) end
     end
 end
 
 function wtfBrist.OnModifierDestroy(ent, xMod)
     if ent == wtfBrist.MyHero and Modifier.GetName(xMod) == "modifier_bristleback_warpath_stack" then
         wtfBrist.WarPathCounter = wtfBrist.WarPathCounter - 1
-        Log.Write("Destroy xMod -> "..Modifier.GetName(xMod).." -> "..wtfBrist.WarPathCounter)
+        if wtfBrist.Debug then Log.Write("Destroy xMod -> "..Modifier.GetName(xMod).." -> "..wtfBrist.WarPathCounter) end
     end
 end
 
