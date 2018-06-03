@@ -2,7 +2,7 @@ local wtfBrist = {}
 
 wtfBrist.IsEnable = Menu.AddOptionBool({"Hero Specific", "WTF+ Bristleback"}, "Enable", false)
 wtfBrist.SprayKey = Menu.AddKeyOption({"Hero Specific", "WTF+ Bristleback"}, "Spray Key", Enum.ButtonCode.KEY_1);
-wtfBrist.Debug = true
+Menu.IsEnabled(wtfBrist.Debug)    = Menu.AddOptionBool({"Hero Specific", "WTF+ Bristleback"}, "Enable", false)
 
 wtfBrist.LastUpdateTime = 0
 wtfBrist.UpdateTime = 0.0
@@ -44,11 +44,11 @@ function wtfBrist.OnUpdate()
         return
     elseif Menu.IsKeyDown(wtfBrist.SprayKey) then
         Ability.CastNoTarget(quillSpray)
-        if wtfBrist.Debug then Log.Write("Force quillSpray!") end
+        if Menu.IsEnabled(wtfBrist.Debug) then Log.Write("Force quillSpray!") end
         return
     elseif not wtfBrist.IsHeroInvisible(wtfBrist.MyHero) and wtfBrist.WarPathCounter < wtfBrist.MaxWarPathCounter then
         Ability.CastNoTarget(quillSpray)
-        if wtfBrist.Debug then Log.Write("Increase warPath by quillSpray!") end
+        if Menu.IsEnabled(wtfBrist.Debug) then Log.Write("Increase warPath by quillSpray!") end
         return
     end
 
@@ -61,7 +61,7 @@ function wtfBrist.OnUpdate()
                 if NPC.GetUnitName(unit) ~= "npc_dota_observer_wards" then
                     if Entity.IsAlive(unit) and not NPC.IsWaitingToSpawn(unit) and not Entity.IsDormant(unit) and Ability.IsReady(quillSpray) then
                         if NPC.IsCreep(unit) or NPC.IsIllusion(unit) or NPC.IsHero(unit) or NPC.IsCourier(unit) then
-                            if wtfBrist.Debug then Log.Write("Attack! [".. NPC.GetUnitName(unit) .."]") end
+                            if Menu.IsEnabled(wtfBrist.Debug) then Log.Write("Attack! [".. NPC.GetUnitName(unit) .."]") end
                             Ability.CastNoTarget(quillSpray)
                             break
                         end
@@ -75,14 +75,14 @@ end
 function wtfBrist.OnModifierCreate(ent, xMod)
     if ent == wtfBrist.MyHero and Modifier.GetName(xMod) == "modifier_bristleback_warpath_stack" then
         wtfBrist.WarPathCounter = wtfBrist.WarPathCounter + 1
-        if wtfBrist.Debug then Log.Write("Create xMod -> "..Modifier.GetName(xMod).." -> "..wtfBrist.WarPathCounter) end
+        if Menu.IsEnabled(wtfBrist.Debug) then Log.Write("Create xMod -> "..Modifier.GetName(xMod).." -> "..wtfBrist.WarPathCounter) end
     end
 end
 
 function wtfBrist.OnModifierDestroy(ent, xMod)
     if ent == wtfBrist.MyHero and Modifier.GetName(xMod) == "modifier_bristleback_warpath_stack" then
         wtfBrist.WarPathCounter = wtfBrist.WarPathCounter - 1
-        if wtfBrist.Debug then Log.Write("Destroy xMod -> "..Modifier.GetName(xMod).." -> "..wtfBrist.WarPathCounter) end
+        if Menu.IsEnabled(wtfBrist.Debug) then Log.Write("Destroy xMod -> "..Modifier.GetName(xMod).." -> "..wtfBrist.WarPathCounter) end
     end
 end
 
