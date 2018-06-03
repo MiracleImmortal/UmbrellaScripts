@@ -2,7 +2,7 @@ local wtfBrist = {}
 
 wtfBrist.IsEnable = Menu.AddOptionBool({"Hero Specific", "WTF+ Bristleback"}, "Enable", false)
 wtfBrist.SprayKey = Menu.AddKeyOption({"Hero Specific", "WTF+ Bristleback"}, "Spray Key", Enum.ButtonCode.KEY_1);
-wtfBrist.Debug    = Menu.AddOptionBool({"Hero Specific", "WTF+ Bristleback"}, "Enable", false)
+wtfBrist.Debug    = Menu.AddOptionBool({"Hero Specific", "WTF+ Bristleback"}, "Debug", false)
 
 wtfBrist.LastUpdateTime = 0
 wtfBrist.UpdateTime = 0.0
