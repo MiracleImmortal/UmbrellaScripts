@@ -8,6 +8,9 @@ AutoUrnAndVessel.optionDebug = Menu.AddOptionBool({ "Utility", "AutoUse", "Urn a
 AutoUrnAndVessel.LastUpdateTime = 0
 AutoUrnAndVessel.UpdateTime = 0.25
 
+AutoUrnAndVessel.PauseUpdateTime = 0
+AutoUrnAndVessel.Pause = 10.1
+
 function AutoUrnAndVessel.OnUpdate()
     if not Menu.IsEnabled(AutoUrnAndVessel.Enable) then
         return
@@ -16,7 +19,11 @@ function AutoUrnAndVessel.OnUpdate()
     if ((os.clock() - AutoUrnAndVessel.LastUpdateTime) < AutoUrnAndVessel.UpdateTime) then
         return
     end
-    AutoUrnAndVessel.LastUpdateTime = os.clock();
+    AutoUrnAndVessel.LastUpdateTime = os.clock()
+
+    if ((os.clock() - AutoUrnAndVessel.PauseUpdateTime) < AutoUrnAndVessel.Pause) then
+        return
+    end
 
     local MyHero = Heroes.GetLocal()
     if not MyHero or not Entity.IsAlive(MyHero) then
@@ -44,6 +51,7 @@ function AutoUrnAndVessel.OnUpdate()
         if Menu.IsEnabled(AutoUrnAndVessel.optionDebug) then
             Log.Write("Your hero is channelling")
         end
+        AutoUrnAndVessel.PauseUpdateTime = os.clock()
         return
     end
 
@@ -53,7 +61,7 @@ function AutoUrnAndVessel.OnUpdate()
         return
     end
 
-    local CastRange = nil
+    local CastRange
     if UrnOfShadows then
         CastRange = Ability.GetCastRange(UrnOfShadows)
     elseif SpiritVessel then
@@ -99,9 +107,9 @@ function AutoUrnAndVessel.OnUpdate()
             --end
 
             if inPercents <= Menu.GetValue(AutoUrnAndVessel.FriendlyHP) then
-                --if Menu.IsEnabled(AutoUrnAndVessel.optionDebug) then
-                --    Log.Write("Use heal to friendly " .. NPC.GetUnitName(friendlyHero) .. " with " .. inPercents .. "% HP")
-                --end
+                if Menu.IsEnabled(AutoUrnAndVessel.optionDebug) then
+                    Log.Write("Use heal to friendly " .. NPC.GetUnitName(friendlyHero) .. " with " .. inPercents .. "% HP")
+                end
 
                 if UrnOfShadows then
                     Ability.CastTarget(UrnOfShadows, friendlyHero, true)
@@ -124,9 +132,9 @@ function AutoUrnAndVessel.OnUpdate()
             --end
 
             if inPercents <= Menu.GetValue(AutoUrnAndVessel.EnemyHP) then
-                --if Menu.IsEnabled(AutoUrnAndVessel.optionDebug) then
-                --    Log.Write("Use heal to enemy " .. NPC.GetUnitName(enemyHero) .. " with " .. inPercents .. "% HP")
-                --end
+                if Menu.IsEnabled(AutoUrnAndVessel.optionDebug) then
+                    Log.Write("Use heal to enemy " .. NPC.GetUnitName(enemyHero) .. " with " .. inPercents .. "% HP")
+                end
 
                 if UrnOfShadows then
                     Ability.CastTarget(UrnOfShadows, enemyHero, true)
@@ -175,9 +183,41 @@ function AutoUrnAndVessel.IsHeroInvisible(MyHero)
 end
 
 function AutoUrnAndVessel.IsChannelling(MyHero)
-    if NPC.IsChannellingAbility(MyHero) then return true end
-    if NPC.HasModifier(MyHero, "modifier_teleporting") then return true end
+    if not MyHero then
+        if Menu.IsEnabled(AutoUrnAndVessel.optionDebug) then
+            Log.Write("Your hero is channelling [ not MyHero ]")
+        end
+        return false
+    end
+    if NPC.IsChannellingAbility(MyHero) then
+        if Menu.IsEnabled(AutoUrnAndVessel.optionDebug) then
+            Log.Write("Your hero is channelling [ NPC.IsChannellingAbility(MyHero) ]")
+        end
+        return true
+    end
+    if NPC.HasModifier(MyHero, "modifier_teleporting") then
+        if Menu.IsEnabled(AutoUrnAndVessel.optionDebug) then
+            Log.Write("Your hero is channelling [ NPC.HasModifier(MyHero, modifier_teleporting) ]")
+        end
+        return true
+    end
+    for i = 0, 24 do
+        local ability = NPC.GetAbilityByIndex(MyHero, i)
+        if ability and Entity.IsEntity(ability) and (Ability.GetLevel(ability) >= 1) and not Ability.IsHidden(ability) and not Ability.IsPassive(ability) and Ability.IsInAbilityPhase(ability) then
+            if Menu.IsEnabled(AutoUrnAndVessel.optionDebug) then
+                Log.Write("Your hero is channelling [ " .. Ability.GetName(ability) .. " ]")
+            end
+            return true
+        end
+    end
+
     return false
 end
+
+--function AutoUrnAndVessel.IsChannelling(MyHero)
+--    if NPC.IsChannellingAbility(MyHero) then return true end
+--    if NPC.HasModifier(MyHero, "modifier_teleporting") then return true end
+--    return false
+--end
 
 return AutoUrnAndVessel
