@@ -2,15 +2,14 @@ local CrystalMaiden = {}
 
 CrystalMaiden.optionEnable = Menu.AddOptionBool({ "Hero Specific", "Crystal Maiden" }, "Enable", false)
 CrystalMaiden.optionKey    = Menu.AddKeyOption({ "Hero Specific", "Crystal Maiden" }, "Combo Key", Enum.ButtonCode.KEY_1)
+
+-- CrystalMaiden.AddBKB     = Menu.AddOptionBool({"Hero Specific", "Crystal Maiden", "Combo skills"}, "BKB", false)
+
+CrystalMaiden.AddBKB     = Menu.AddOptionBool({"Hero Specific", "Crystal Maiden", "Combo items"}, "BKB", false)
+CrystalMaiden.AddGlimmer = Menu.AddOptionBool({"Hero Specific", "Crystal Maiden", "Combo items"}, "Glimmer", false)
+CrystalMaiden.AddShiva = Menu.AddOptionBool({"Hero Specific", "Crystal Maiden", "Combo items"}, "Shiva", false)
+
 CrystalMaiden.optionDebug  = Menu.AddOptionBool({ "Hero Specific", "Crystal Maiden" }, "Debug", false)
-
-CrystalMaiden.AddBKB     = Menu.AddOptionBool({"Hero Specific", "Crystal Maiden", "Combo"}, "BKB", false)
-CrystalMaiden.AddGlimmer = Menu.AddOptionBool({"Hero Specific", "Crystal Maiden", "Combo"}, "Glimmer", false)
-
-local combo_start = false
-local combo_bkb = false
-local combo_ult = false
-local combo_glimmer = false
 
 function CrystalMaiden.OnUpdate()
     if not Menu.IsEnabled(CrystalMaiden.optionEnable) then return end
@@ -25,63 +24,64 @@ end
 
 function CrystalMaiden.Combo(MyHero)
     local freezingField = NPC.GetAbility(MyHero, "crystal_maiden_freezing_field")
+    -- local crystalNova   = NPC.GetAbility(MyHero, "crystal_maiden_crystal_nova")
     local bkb           = NPC.GetItem(MyHero, "item_black_king_bar")
     local glimmer       = NPC.GetItem(MyHero, "item_glimmer_cape")
+    local shiva         = NPC.GetItem(MyHero, "item_shivas_guard")
 
-    local manaCount = NPC.GetMana(MyHero)
+    if not freezingField then return end
 
-    local manaNeed = CrystalMaiden.GetManaNeed(MyHero, freezingField, bkb, glimmer)
-    if manaNeed==nil then return end
+    CrystalMaiden.manaCount = NPC.GetMana(MyHero)
+    CrystalMaiden.realManaCount = CrystalMaiden.manaCount
+    if not CrystalMaiden.manaCount then return end
 
-    if not combo_start and manaCount >= manaNeed then
-        combo_start = true
+    freezingFieldManaCost = Ability.GetManaCost(freezingField)
+    if not freezingFieldManaCost then return end
+
+    CrystalMaiden.manaCount = CrystalMaiden.manaCount-freezingFieldManaCost
+    CrystalMaiden.ManaNeed = CrystalMaiden.GetManaNeed(MyHero, bkb, glimmer, shiva)
+
+    if CrystalMaiden.manaCount >= CrystalMaiden.ManaNeed then
+        if bkb and Menu.IsEnabled(CrystalMaiden.AddBKB) and Ability.IsCastable(bkb, CrystalMaiden.manaCount) and Ability.IsReady(bkb) then
+            -- if Menu.IsEnabled(CrystalMaiden.optionDebug) then Log.Write("Use BKB") end
+            Ability.CastNoTarget(bkb, true)
+        end
+
+        if glimmer and Menu.IsEnabled(CrystalMaiden.AddGlimmer) and Ability.IsCastable(glimmer, CrystalMaiden.manaCount) and Ability.IsReady(glimmer) then
+            -- if Menu.IsEnabled(CrystalMaiden.optionDebug) then Log.Write("Use Glimmer cape") end
+            Ability.CastTarget(glimmer, MyHero, true)
+        end
+
+        if shiva and Menu.IsEnabled(CrystalMaiden.AddShiva) and Ability.IsCastable(shiva, CrystalMaiden.manaCount) and Ability.IsReady(shiva) then
+            -- if Menu.IsEnabled(CrystalMaiden.optionDebug) then Log.Write("Use Shiva's guard") end
+            Ability.CastNoTarget(shiva, true)
+        end
     end
 
-    if combo_start then
-        if not combo_bkb and bkb and Menu.IsEnabled(CrystalMaiden.AddBKB) and Ability.IsCastable(bkb, manaCount) and Ability.IsReady(bkb) then
-            Ability.CastNoTarget(bkb, true)
-            if Menu.IsEnabled(CrystalMaiden.optionDebug) then Log.Write("combo_bkb = true") end
-            combo_bkb = true
-        end
-
-        if not combo_glimmer and glimmer and Menu.IsEnabled(CrystalMaiden.AddGlimmer) and Ability.IsCastable(glimmer, manaCount) and Ability.IsReady(glimmer) then
-            Ability.CastTarget(glimmer, MyHero)
-            if Menu.IsEnabled(CrystalMaiden.optionDebug) then Log.Write("combo_glimmer = true") end
-            combo_glimmer = true
-        end
-
-        if not combo_ult and freezingField and Menu.IsEnabled(CrystalMaiden.AddGlimmer) and Ability.IsCastable(freezingField, manaCount) and Ability.IsReady(freezingField) then
-            Ability.CastNoTarget(freezingField, true)
-            if Menu.IsEnabled(CrystalMaiden.optionDebug) then Log.Write("combo_ult = true") end
-            combo_ult = true
-        end
-
-        if combo_start and combo_bkb and combo_glimmer and combo_ult then
-            combo_start = false
-            combo_bkb = false
-            combo_glimmer = false
-            combo_ult = false
-        end
+    -- if Menu.IsEnabled(CrystalMaiden.optionDebug) then Log.Write("Cat Ult") end
+    if freezingField and Ability.IsCastable(freezingField, CrystalMaiden.realManaCount) and Ability.IsReady(freezingField) then
+        Ability.CastNoTarget(freezingField)
     end
 end
 
-function CrystalMaiden.GetManaNeed(MyHero, freezingField, bkb, glimmer)
+function CrystalMaiden.GetManaNeed(MyHero, bkb, glimmer, shiva)
     local mana = 0
 
-    if not freezingField then return nil end
-    mana = mana + Ability.GetManaCost(freezingField)
-
-    if not bkb then return nil end
     if bkb and Menu.IsEnabled(CrystalMaiden.AddBKB) then
         mana = mana + Ability.GetManaCost(bkb)
     end
 
-    if not glimmer then return nil end
     if glimmer and Menu.IsEnabled(CrystalMaiden.AddGlimmer) then
         mana = mana + Ability.GetManaCost(glimmer)
     end
 
+    if shiva and Menu.IsEnabled(CrystalMaiden.AddShiva) then
+        mana = mana + Ability.GetManaCost(shiva)
+    end
+
     return mana
 end
+
+
 
 return CrystalMaiden
