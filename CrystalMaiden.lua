@@ -1,9 +1,10 @@
 local CrystalMaiden = {}
 
 CrystalMaiden.optionEnable = Menu.AddOptionBool({ "Hero Specific", "Crystal Maiden" }, "Enable", false)
-CrystalMaiden.optionKey = Menu.AddKeyOption({ "Hero Specific", "Crystal Maiden" }, "Combo Key", Enum.ButtonCode.KEY_1)
+CrystalMaiden.optionKey    = Menu.AddKeyOption({ "Hero Specific", "Crystal Maiden" }, "Combo Key", Enum.ButtonCode.KEY_1)
+CrystalMaiden.optionDebug  = Menu.AddOptionBool({ "Hero Specific", "Crystal Maiden" }, "Debug", false)
 
-CrystalMaiden.AddBKB = Menu.AddOptionBool({"Hero Specific", "Crystal Maiden", "Combo"}, "BKB", false)
+CrystalMaiden.AddBKB     = Menu.AddOptionBool({"Hero Specific", "Crystal Maiden", "Combo"}, "BKB", false)
 CrystalMaiden.AddGlimmer = Menu.AddOptionBool({"Hero Specific", "Crystal Maiden", "Combo"}, "Glimmer", false)
 
 local combo_start = false
@@ -39,17 +40,20 @@ function CrystalMaiden.Combo(MyHero)
     if combo_start then
         if not combo_bkb and bkb and Menu.IsEnabled(CrystalMaiden.AddBKB) and Ability.IsCastable(bkb, manaCount) and Ability.IsReady(bkb) then
             Ability.CastNoTarget(bkb, true)
+            if Menu.IsEnabled(CrystalMaiden.optionDebug) then Log.Write("combo_bkb = true") end
             combo_bkb = true
-        end
-
-        if not combo_ult and freezingField and Menu.IsEnabled(CrystalMaiden.AddGlimmer) and Ability.IsCastable(freezingField, manaCount) and Ability.IsReady(freezingField) then
-            Ability.CastNoTarget(freezingField, true)
-            combo_ult = true
         end
 
         if not combo_glimmer and glimmer and Menu.IsEnabled(CrystalMaiden.AddGlimmer) and Ability.IsCastable(glimmer, manaCount) and Ability.IsReady(glimmer) then
             Ability.CastTarget(glimmer, MyHero)
+            if Menu.IsEnabled(CrystalMaiden.optionDebug) then Log.Write("combo_glimmer = true") end
             combo_glimmer = true
+        end
+
+        if not combo_ult and freezingField and Menu.IsEnabled(CrystalMaiden.AddGlimmer) and Ability.IsCastable(freezingField, manaCount) and Ability.IsReady(freezingField) then
+            Ability.CastNoTarget(freezingField, true)
+            if Menu.IsEnabled(CrystalMaiden.optionDebug) then Log.Write("combo_ult = true") end
+            combo_ult = true
         end
 
         if combo_start and combo_bkb and combo_glimmer and combo_ult then
