@@ -91,15 +91,15 @@ function AutoGuardianGreaves.OnUpdate()
             end
         end
 
-        local NeedHealthRegen = Menu.GetValue(AutoGuardianGreaves.MinTeammatesCount) * AutoGuardianGreaves.ManaRegen
+        local NeedHealthRegen = Menu.GetValue(AutoGuardianGreaves.MinTeammatesCount) * AutoGuardianGreaves.HealthRegen
 
         local RealHealthNeed = 0
         for i, hero in pairs(Teammates) do
             if hero and Entity.IsAlive(hero) then
                 local HeroHealthNeed = Entity.GetMaxHealth(hero) - Entity.GetHealth(hero)
-                if HeroHealthNeed >= AutoGuardianGreaves.ManaRegen then
-                    RealHealthNeed = RealHealthNeed + AutoGuardianGreaves.ManaRegen
-                elseif HeroHealthNeed < AutoGuardianGreaves.ManaRegen then
+                if HeroHealthNeed >= AutoGuardianGreaves.HealthRegen then
+                    RealHealthNeed = RealHealthNeed + AutoGuardianGreaves.HealthRegen
+                elseif HeroHealthNeed < AutoGuardianGreaves.HealthRegen then
                     RealHealthNeed = RealHealthNeed + (Entity.GetMaxHealth(hero) - Entity.GetHealth(hero))
                 end
             end
