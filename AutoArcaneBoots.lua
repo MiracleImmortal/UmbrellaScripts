@@ -1,6 +1,6 @@
 local AutoArcaneBoots = {}
 
-local MenuPath = { "Utility", "AutoUse", "Arcane boots" }
+local MenuPath = { "Utility", "AutoUse", "ArcaneBoots" }
 
 AutoArcaneBoots.EnableForYou = Menu.AddOptionBool(MenuPath, "Enable for you", false)
 AutoArcaneBoots.EnableForTeammates = Menu.AddOptionBool(MenuPath, "Enable for teammates", false)
