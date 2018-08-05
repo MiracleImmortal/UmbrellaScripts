@@ -75,22 +75,101 @@ function wtfBrist.OnUpdate()
     end
 
     for i, unit in pairs(Units) do
-        if unit ~= nil and unit ~= 0 and NPCs.Contains(unit) and NPC.IsEntityInRange(wtfBrist.MyHero, unit, quillSprayCastRange) then
-            if not Entity.IsSameTeam(unit, wtfBrist.MyHero) and not NPC.IsStructure(unit) and NPC.GetUnitName(unit) ~= "npc_dota_neutral_caster" then
-                if NPC.GetUnitName(unit) ~= "npc_dota_observer_wards" then
-                    if Entity.IsAlive(unit) and not NPC.IsWaitingToSpawn(unit) and not Entity.IsDormant(unit) and Ability.IsReady(quillSpray) then
-                        if NPC.IsCreep(unit) or NPC.IsIllusion(unit) or NPC.IsHero(unit) or NPC.IsCourier(unit) then
-                            if Menu.IsEnabled(wtfBrist.optionDebug) then
-                                Log.Write("Attack! [" .. NPC.GetUnitName(unit) .. "]")
-                            end
-                            Ability.CastNoTarget(quillSpray)
-                            break
-                        end
-                    end
-                end
+        if wtfBrist.isItTarget(unit, wtfBrist.MyHero, quillSprayCastRange) and Ability.IsReady(quillSpray) then
+            if Menu.IsEnabled(wtfBrist.optionDebug) then
+                Log.Write("Attack! [" .. NPC.GetUnitName(unit) .. "]")
             end
+            Ability.CastNoTarget(quillSpray)
+            break
         end
     end
+
+    -- if Menu.IsEnabled(wtfBrist.optionDebug) then
+    --     Log.Write("Start iretation")
+    -- end
+--    for i, unit in pairs(Units) do
+--        -- if Menu.IsEnabled(wtfBrist.optionDebug) then
+--        --     Log.Write("Before if! [" .. NPC.GetUnitName(unit) .. "]")
+--        -- end
+--
+--        if unit ~= nil and unit ~= 0 and NPCs.Contains(unit) and NPC.IsEntityInRange(wtfBrist.MyHero, unit, quillSprayCastRange) then
+--            -- if Menu.IsEnabled(wtfBrist.optionDebug) then
+--            --     Log.Write("First if! [" .. NPC.GetUnitName(unit) .. "]")
+--            -- end
+--
+--            if not Entity.IsSameTeam(unit, wtfBrist.MyHero) and not NPC.IsStructure(unit) and NPC.GetUnitName(unit) ~= "npc_dota_neutral_caster" then
+--                -- if Menu.IsEnabled(wtfBrist.optionDebug) then
+--                --     Log.Write("Second if! [" .. NPC.GetUnitName(unit) .. "]")
+--                -- end
+--
+--                if NPC.GetUnitName(unit) ~= "npc_dota_observer_wards" then
+--                    if Entity.IsAlive(unit) and not NPC.IsWaitingToSpawn(unit) and not Entity.IsDormant(unit) and Ability.IsReady(quillSpray) then
+--                        if NPC.IsCreep(unit) or NPC.IsIllusion(unit) or NPC.IsHero(unit) or NPC.IsCourier(unit) then
+--                            if Menu.IsEnabled(wtfBrist.optionDebug) then
+--                                Log.Write("Attack! [" .. NPC.GetUnitName(unit) .. "]")
+--                            end
+--                            Ability.CastNoTarget(quillSpray)
+--                            break
+--                        end
+--                    end
+--                end
+--            end
+--        end
+--    end
+end
+
+function wtfBrist.isItTarget(unit, mySelf, abilCastRange)
+    if unit == nil or unit == 0 then
+        return false
+    end
+
+--    if not NPCs.Contains(unit) then
+--        return false
+--    end
+
+    if not NPC.IsEntityInRange(mySelf, unit, abilCastRange) then
+        return false
+    end
+
+    if Entity.IsSameTeam(unit, mySelf) then
+        return false
+    end
+
+    if NPC.IsStructure(unit) then
+        return false
+    end
+
+    local unitName = NPC.GetUnitName(unit)
+
+    if unitName == "npc_dota_neutral_caster" then
+        return false
+    end
+
+    if unitName == "npc_dota_observer_wards" then
+        return false
+    end
+
+    if unitName == "" then
+        return false
+    end
+
+    if not Entity.IsAlive(unit) then
+        return false
+    end
+
+    if NPC.IsWaitingToSpawn(unit) then
+        return false
+    end
+
+    if Entity.IsDormant(unit) then
+        return false
+    end
+
+--    if NPC.IsCreep(unit) or NPC.IsIllusion(unit) or NPC.IsHero(unit) or NPC.IsCourier(unit) then
+--        return true
+--    end
+
+    return true
 end
 
 function wtfBrist.OnModifierCreate(ent, xMod)
