@@ -1,6 +1,7 @@
 local wtfBrist = {}
 
 wtfBrist.optionEnable = Menu.AddOptionBool({ "Hero Specific", "WTF+ Bristleback" }, "Enable", false)
+wtfBrist.optionIcon = Menu.AddOptionIcon({ "Hero Specific", "WTF+ Bristleback" }, "panorama/images/heroes/icons/npc_dota_hero_bristleback_png.vtex_c")
 wtfBrist.optionPause = Menu.AddOptionSlider({ "Hero Specific", "WTF+ Bristleback" }, "Pause", 0, 99, 0)
 wtfBrist.optionSprayKey = Menu.AddKeyOption({ "Hero Specific", "WTF+ Bristleback" }, "Spray Key", Enum.ButtonCode.KEY_1);
 wtfBrist.optionDebug = Menu.AddOptionBool({ "Hero Specific", "WTF+ Bristleback" }, "Debug", false)
@@ -83,39 +84,6 @@ function wtfBrist.OnUpdate()
             break
         end
     end
-
-    -- if Menu.IsEnabled(wtfBrist.optionDebug) then
-    --     Log.Write("Start iretation")
-    -- end
---    for i, unit in pairs(Units) do
---        -- if Menu.IsEnabled(wtfBrist.optionDebug) then
---        --     Log.Write("Before if! [" .. NPC.GetUnitName(unit) .. "]")
---        -- end
---
---        if unit ~= nil and unit ~= 0 and NPCs.Contains(unit) and NPC.IsEntityInRange(wtfBrist.MyHero, unit, quillSprayCastRange) then
---            -- if Menu.IsEnabled(wtfBrist.optionDebug) then
---            --     Log.Write("First if! [" .. NPC.GetUnitName(unit) .. "]")
---            -- end
---
---            if not Entity.IsSameTeam(unit, wtfBrist.MyHero) and not NPC.IsStructure(unit) and NPC.GetUnitName(unit) ~= "npc_dota_neutral_caster" then
---                -- if Menu.IsEnabled(wtfBrist.optionDebug) then
---                --     Log.Write("Second if! [" .. NPC.GetUnitName(unit) .. "]")
---                -- end
---
---                if NPC.GetUnitName(unit) ~= "npc_dota_observer_wards" then
---                    if Entity.IsAlive(unit) and not NPC.IsWaitingToSpawn(unit) and not Entity.IsDormant(unit) and Ability.IsReady(quillSpray) then
---                        if NPC.IsCreep(unit) or NPC.IsIllusion(unit) or NPC.IsHero(unit) or NPC.IsCourier(unit) then
---                            if Menu.IsEnabled(wtfBrist.optionDebug) then
---                                Log.Write("Attack! [" .. NPC.GetUnitName(unit) .. "]")
---                            end
---                            Ability.CastNoTarget(quillSpray)
---                            break
---                        end
---                    end
---                end
---            end
---        end
---    end
 end
 
 function wtfBrist.isItTarget(unit, mySelf, abilCastRange)
